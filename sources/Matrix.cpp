@@ -1,10 +1,10 @@
 #include "Matrix.hpp"
-
+size_t const nine =9;
 
 using namespace std;
 
-
 namespace zich {
+
 
     ostream &operator<<(ostream &os, const Matrix &m) {
         string ans = "[";
@@ -33,11 +33,11 @@ namespace zich {
         vector<double> v;
         string num;
         for (size_t i = 0; i < s.size(); i++) {
-            if ((s.at(i)-'0'>=0 && s.at(i)-'0'<=9) || s.at(i)=='.'){
+            if ((s.at(i)-'0'>=0 && s.at(i)-'0'<=nine) || s.at(i)=='.'){
                 num.append(1,s.at(i));
             }
             else{
-                if(num!="") {
+                if(!num.empty()) {
                     v.push_back(stof(num));
                 }
                 num="";
@@ -54,12 +54,15 @@ namespace zich {
         return sum;
     }
 
+    bool isNotValid(string& s){
+        return s.find(", ")==std::string::npos || s.at(0)==','|| s.find(",[")!=std::string::npos || s.find("] [")!=std::string::npos || s.find("[ ")!=std::string::npos;
+    }
 
     std::istream& operator>> (std::istream& input , Matrix& m){
         //converting the data from input to string
         std::string s;
         vector<double> v;
-        size_t rows;
+        size_t rows=1;
 
         std::streampos p = input.tellg();
 
@@ -70,15 +73,17 @@ namespace zich {
         s.resize(size_t (sz));
         input.read(&s[0], sz);
 
+        if (isNotValid(s)){ throw "the string is not valid";};
         v=insertToVec(s);
         rows= numberOfRows(s);
-        m=Matrix(v,rows,v.size()/rows);
+        if(rows!=0){
+        m=Matrix(v,rows,int(v.size()/rows));}
 
         return input;
     }
 
     Matrix operator-(const Matrix &c1, const Matrix &c2) {
-        if (c1.getCol()!=c2.getCol() || c1.getRow()!=c2.getRow()) throw "the size of matrices are not the same";
+        if (c1.getCol()!=c2.getCol() || c1.getRow()!=c2.getRow()) {throw "the size of matrices are not the same";}
 
         vector<double> v;
         for (size_t i = 0; i < c1.getMat().size(); i++) {
@@ -88,7 +93,7 @@ namespace zich {
     }
 
     Matrix operator+(const Matrix &c1, const Matrix &c2) {
-        if (c1.getCol()!=c2.getCol() || c1.getRow()!=c2.getRow()) throw "the size of matrices are not the same";
+        if (c1.getCol()!=c2.getCol() || c1.getRow()!=c2.getRow()) {throw "the size of matrices are not the same";}
 
         vector<double> v;
         for (size_t i = 0; i < c1.getMat().size(); i++) {
@@ -98,7 +103,7 @@ namespace zich {
     }
 
     Matrix operator*(const Matrix &c1, const Matrix &c2) {
-        if (c1.getCol()!=c2.getRow()) throw "the size of matrices are not valid";
+        if (c1.getCol()!=c2.getRow()) {throw "the size of matrices are not valid";}
         vector<double> v;
         double n=0;
         for (size_t i = 0; i < c1.getRow(); i++) {
@@ -131,9 +136,10 @@ namespace zich {
     }
 
     bool operator==(const Matrix& c1, const Matrix& c2){
-        if (c1.getCol()!=c2.getCol() || c1.getRow()!=c2.getRow()) return false;
+        if (c1.getCol()!=c2.getCol() || c1.getRow()!=c2.getRow()) {throw "the size of matrices is not the same";}
+
         for (size_t i = 0; i < c1.getMat().size(); i++) {
-            if(c1.getMat()[i]!=c2.mat[i]) return false;
+            if(c1.getMat()[i]!=c2.mat[i]) {return false;}
         }
         return true;
     }
@@ -141,6 +147,7 @@ namespace zich {
     bool operator<(const Matrix& c1, const Matrix& c2){
         double sum=0;
         double sumC1=0;
+        if (c1.getCol()!=c2.getCol() || c1.getRow()!=c2.getRow()) {throw "the size of matrices is not the same";}
 
         for (size_t i = 0; i < c1.getMat().size(); i++) {
             sumC1+=c1.mat[i];
@@ -154,6 +161,7 @@ namespace zich {
     bool operator<=(const Matrix &c1, const Matrix &c2) {
         double sum=0;
         double sumC1=0;
+        if (c1.getCol()!=c2.getCol() || c1.getRow()!=c2.getRow()) {throw "the size of matrices is not the same";}
 
         for (size_t i = 0; i < c1.getMat().size(); i++) {
             sumC1+=c1.mat[i];
@@ -167,6 +175,7 @@ namespace zich {
     bool operator>(const Matrix &c1, const Matrix &c2) {
         double sum=0;
         double sumC1=0;
+        if (c1.getCol()!=c2.getCol() || c1.getRow()!=c2.getRow()) {throw "the size of matrices is not the same";}
 
         for (size_t i = 0; i < c1.getMat().size(); i++) {
             sumC1+=c1.mat[i];
@@ -180,6 +189,7 @@ namespace zich {
     bool operator>=(const Matrix &c1, const Matrix &c2) {
         double sum=0;
         double sumC1=0;
+        if (c1.getCol()!=c2.getCol() || c1.getRow()!=c2.getRow()) {throw "the size of matrices is not the same";}
 
         for (size_t i = 0; i < c1.getMat().size(); i++) {
             sumC1+=c1.mat[i];
@@ -191,9 +201,10 @@ namespace zich {
     }
 
     bool Matrix::operator==(const Matrix &c1){
-        if (c1.getCol()!=getCol() || c1.getRow()!=getRow()) return false;
+        if (c1.getCol()!=getCol() || c1.getRow()!=getRow()) {throw "the size of matrices is not the same";}
+
         for (size_t i = 0; i < c1.getMat().size(); i++) {
-            if(c1.getMat()[i]!=mat[i]) return false;
+            if(c1.getMat()[i]!=mat[i]) {return false;}
         }
         return true;
     }
@@ -201,6 +212,7 @@ namespace zich {
     bool Matrix::operator<(const Matrix &c1) {
         double sum=0;
         double sumC1=0;
+        if (c1.getCol()!=getCol() || c1.getRow()!=getRow()) {throw "the size of matrices is not the same";}
 
         for (size_t i = 0; i < c1.getMat().size(); i++) {
             sumC1+=c1.mat[i];
@@ -214,6 +226,7 @@ namespace zich {
     bool Matrix::operator<=(const Matrix &c1) {
         double sum=0;
         double sumC1=0;
+        if (c1.getCol()!=getCol() || c1.getRow()!=getRow()) {throw "the size of matrices is not the same";}
 
         for (size_t i = 0; i < c1.getMat().size(); i++) {
             sumC1+=c1.mat[i];
@@ -227,6 +240,7 @@ namespace zich {
     bool Matrix::operator>(const Matrix& c1){
         double sum=0;
         double sumC1=0;
+        if (c1.getCol()!=getCol() || c1.getRow()!=getRow()) {throw "the size of matrices is not the same";}
 
         for (size_t i = 0; i < c1.getMat().size(); i++) {
             sumC1+=c1.mat[i];
@@ -240,6 +254,7 @@ namespace zich {
     bool Matrix::operator>=(const Matrix& c1){
         double sum=0;
         double sumC1=0;
+        if (c1.getCol()!=getCol() || c1.getRow()!=getRow()) {throw "the size of matrices is not the same";}
 
         for (size_t i = 0; i < c1.getMat().size(); i++) {
             sumC1+=c1.mat[i];
@@ -251,15 +266,15 @@ namespace zich {
     }
 
     bool Matrix::operator!=(const Matrix& c1){
-        if (c1.getCol()!=getCol() || c1.getRow()!=getRow()) return true;
+        if (c1.getCol()!=getCol() || c1.getRow()!=getRow()) {throw "the size of matrices is not the same";}
         for (size_t i = 0; i < c1.getMat().size(); i++) {
-            if(c1.getMat()[i]!=mat[i]) return true;
+            if(c1.getMat()[i]!=mat[i]) {return true;}
         }
         return false;
     }
 
     void Matrix::operator+=(const Matrix &other) {
-        if (getCol()!=other.getCol() || getRow()!=other.getRow()) throw "the size of matrices are not the same";
+        if (getCol()!=other.getCol() || getRow()!=other.getRow()) {throw "the size of matrices are not the same";}
 
         for (size_t i = 0; i < mat.size(); i++) {
             mat[i]+=other.getMat()[i];
@@ -267,7 +282,7 @@ namespace zich {
     }
 
     void Matrix::operator-=(const Matrix &other) {
-        if (getCol()!=other.getCol() || getRow()!=other.getRow()) throw "the size of matrices are not the same";
+        if (getCol()!=other.getCol() || getRow()!=other.getRow()){ throw "the size of matrices are not the same";}
 
         for (size_t i = 0; i < mat.size(); i++) {
             mat[i]-=other.getMat()[i];
@@ -275,7 +290,7 @@ namespace zich {
     }
 
     void Matrix::operator*=(const Matrix &other) {
-        if (getCol()!=other.getRow()) throw "the size of matrices are not valid";
+        if (getCol()!=other.getRow()){throw "the size of matrices are not valid";}
         vector<double> v;
         double n=0;
         for (size_t i = 0; i < getRow(); i++) {
