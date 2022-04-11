@@ -7,10 +7,7 @@
 using namespace std;
 using namespace zich;
 
-
-
 std::vector<double> identity = {1, 0, 0, 0, 1, 0, 0, 0, 1};
-
 std::ostringstream out;
 
 TEST_CASE("Good input") {
@@ -20,10 +17,11 @@ TEST_CASE("Good input") {
 
     Matrix iden{identity, 3, 3};
 
-    Matrix m1{arr1, 3, 3};
+    Matrix m1(arr1, 3, 3);
     Matrix m2{arr2,3,3};
     Matrix m3{arr3,3,3};
-    vector<Matrix> marr{m1,m2,m3};
+    std::vector<Matrix> marr{m1,m2,m3};
+
 
     out << m1;
     CHECK(out.str()=="[2 0 0]\n"
@@ -57,7 +55,7 @@ TEST_CASE("Good input") {
 
     out<<2*(m1+m2);
     CHECK(out.str()=="[10 16 0]\n"
-                     "[0 8 7]\n"
+                     "[0 8 14]\n"
                      "[18 0 6]\n");
     out.str("");
 
@@ -81,17 +79,19 @@ TEST_CASE("Good input") {
 
     out<<1*m3;
     CHECK(out.str()=="[11 44 23]\n"
-                     "[4 22 78]]\n"
+                     "[4 22 78]\n"
                      "[12 23 70]\n");
     out.str("");
 
-    for (size_t i = 0; i < marr.size(); i++) {
-        CHECK((marr[i]*iden)==marr[i]);
+
+    for (size_t i = 0; i < marr.size(); i++){
+      Matrix m=marr[i]*iden;
+      CHECK(m==marr[i]);
     }
 
     out<<m3-m1;
     CHECK(out.str()=="[9 44 23]\n"
-                     "[4 20 78]]\n"
+                     "[4 20 78]\n"
                      "[12 23 68]\n");
     out.str("");
 
@@ -105,20 +105,20 @@ TEST_CASE("Good input") {
     m3*=3;
     out<<m3;
     CHECK(out.str()=="[33 132 69]\n"
-                     "[12 66 234]]\n"
+                     "[12 66 234]\n"
                      "[36 69 210]\n");
     out.str("");
 
-    out<<m1++;
-    CHECK(out.str()=="[4 9 1]\n"
-                     "[1 3 8]\n"
-                     "[10 1 2]\n");
+    out<<++m2;
+    CHECK(out.str()=="[6 9 1]\n"
+                     "[1 5 8]\n"
+                     "[10 1 4]\n");
     out.str("");
 
-    out<<-m1;
-    CHECK(out.str()=="[-4 -9 -1]\n"
-                     "[-1 -3 -8]\n"
-                     "[-10 -1 -2]\n");
+    out<<-m2;
+    CHECK(out.str()=="[-6 -9 -1]\n"
+                     "[-1 -5 -8]\n"
+                     "[-10 -1 -4]\n");
     out.str("");
 }
 
